@@ -30,7 +30,19 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "1"
       containers:
+      - name: {{ .Chart.Name }}-debug
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args: [ "--config", "config.yaml" ]
+        command:
+          - sh
+          - -c
+          - while true;do sleep 30; done
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
